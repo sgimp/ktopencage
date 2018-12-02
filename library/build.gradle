@@ -14,11 +14,23 @@ android {
 }
 
 
+def getLatestTag = { ->
+  try {
+    def stdout = new ByteArrayOutputStream()
+    exec {
+      commandLine 'git', 'describe', '--abbrev=0', '--tags'
+      standardOutput = stdout
+    }
+    return stdout.toString().trim()
+  }
+  catch (ignored) {
+    return null
+  }
+}
+
 bintray {
   user = project.hasProperty('BINTRAY_USER') ? BINTRAY_USER : null
   key = project.hasProperty('BINTRAY_API_KEY') ? BINTRAY_API_KEY : null
-
-  var gitTag = getLatestTag();
 
   publications = ['Production']
 
@@ -31,8 +43,8 @@ bintray {
     licenses = ['Apache-2.0']
 
     version {
-      name = gitTag
-      vcsTag = 'v' + gitTag
+      name = getLatestTag()
+      vcsTag = 'v' + name
     }
   }
 }
@@ -85,20 +97,6 @@ artifacts {
   archives androidSourcesJar
   archives androidJavadocsJar
   archives androidJar
-}
-
-def getLatestTag = { ->
-  try {
-    def stdout = new ByteArrayOutputStream()
-    exec {
-      commandLine 'git', 'describe', '--abbrev=0', '--tags'
-      standardOutput = stdout
-    }
-    return stdout.toString().trim()
-  }
-  catch (ignored) {
-    return null
-  }
 }
 
 dependencies {

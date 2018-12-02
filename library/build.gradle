@@ -15,10 +15,8 @@ android {
 
 
 bintray {
-  Properties properties = new Properties()
-  properties.load(project.rootProject.file('local.properties').newDataInputStream())
-  user = properties.getProperty('BINTRAY_USER')
-  key = properties.getProperty('BINTRAY_API_KEY')
+  user = project.hasProperty('BINTRAY_USER') ? BINTRAY_USER : null
+  key = project.hasProperty('BINTRAY_API_KEY') ? BINTRAY_API_KEY : null
 
   var gitTag = getLatestTag();
 

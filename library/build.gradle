@@ -1,0 +1,111 @@
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'maven-publish'
+apply plugin: 'com.jfrog.bintray'
+
+
+android {
+  compileSdkVersion 28
+
+  defaultConfig {
+    minSdkVersion 14
+    targetSdkVersion 28
+  }
+}
+
+
+bintray {
+  Properties properties = new Properties()
+  properties.load(project.rootProject.file('local.properties').newDataInputStream())
+  user = properties.getProperty('BINTRAY_USER')
+  key = properties.getProperty('BINTRAY_API_KEY')
+
+  var gitTag = getLatestTag();
+
+  publications = ['Production']
+
+  pkg {
+    repo = 'andev'
+    name = 'ktopencage'
+    userOrg = 'andevgimpel'
+    desc = 'OpenCage geocoding client for Android'
+    websiteUrl = 'https://github.com/sgimp/ktopencage'
+    licenses = ['Apache-2.0']
+
+    version {
+      name = gitTag
+      vcsTag = 'v' + gitTag
+    }
+  }
+}
+
+publishing {
+  publications {
+    Production(MavenPublication) {
+      artifact("build/outputs/aar/library-release.aar")
+
+      groupId 'andev'
+      artifactId 'ktopencage'
+      version getLatestTag()
+
+      pom.withXml {
+        def dependenciesNode = asNode().appendNode('dependencies')
+
+        configurations.implementation.allDependencies.each {
+          def dependencyNode = dependenciesNode.appendNode('dependency')
+          dependencyNode.appendNode('groupId', it.group)
+          dependencyNode.appendNode('artifactId', it.name)
+          dependencyNode.appendNode('version', it.version)
+        }
+      }
+    }
+  }
+}
+
+
+task androidJavadocs(type: Javadoc) {
+  source = android.sourceSets.main.java.srcDirs
+  classpath += project.files(android.getBootClasspath().join(File.pathSeparator))
+  failOnError false
+}
+
+task androidJavadocsJar(type: Jar, dependsOn: androidJavadocs) {
+  classifier = 'javadoc'
+  from androidJavadocs.destinationDir
+}
+
+task androidSourcesJar(type: Jar) {
+  classifier = 'sources'
+  from android.sourceSets.main.java.sourceFiles
+}
+
+task androidJar(type: Jar) {
+  from 'build/intermediates/classes/release'
+}
+
+artifacts {
+  archives androidSourcesJar
+  archives androidJavadocsJar
+  archives androidJar
+}
+
+def getLatestTag = { ->
+  try {
+    def stdout = new ByteArrayOutputStream()
+    exec {
+      commandLine 'git', 'describe', '--abbrev=0', '--tags'
+      standardOutput = stdout
+    }
+    return stdout.toString().trim()
+  }
+  catch (ignored) {
+    return null
+  }
+}
+
+dependencies {
+  implementation 'com.google.code.gson:gson:2.8.5'
+  implementation 'com.squareup.okhttp3:okhttp:3.12.0'
+  implementation 'com.github.ReactiveX:RxKotlin:2.3.0'
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+}

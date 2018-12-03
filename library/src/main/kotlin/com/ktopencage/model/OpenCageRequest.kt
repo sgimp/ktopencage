@@ -17,12 +17,16 @@ class OpenCageRequest {
 
   val bounds: OpenCageBounds? = null
   var restrictToCountryCode: String? = null
-  var queryParts = mutableListOf<String>()
-  var queryPartSeparator = ","
 
-  var lat: Double? = null
-  var lng: Double? = null
+  private var queryParts = mutableListOf<String>()
+  private val queryPartSeparator = ","
 
+  private var lat: Double? = null
+  private var lng: Double? = null
+
+  /**
+   * Reverse geocoding request constructor
+   */
   constructor(lat: Double, lng: Double) {
     this.lat = lat
     this.lng = lng
@@ -30,6 +34,9 @@ class OpenCageRequest {
     isReverseRequest = true
   }
 
+  /**
+   * Forward geocoding request constructor
+   */
   constructor(vararg queryParts: String) {
     for (queryPart in queryParts) {
       this.queryParts.add(queryPart)
@@ -124,6 +131,6 @@ class OpenCageRequest {
   }
 
   private fun addReverseRequestParams(params: MutableMap<String, String>) {
-    params["q"] ="$lat $lng"
+    params["q"] = "$lat $lng"
   }
 }

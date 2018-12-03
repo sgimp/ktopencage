@@ -22,34 +22,15 @@ class OpenCageGeoCoder(val apiKey: String) {
     gson = gsonBuilder.create()
   }
 
-  fun forwardRequestObservable(request: OpenCageRequest): Observable<OpenCageResponse> {
+  /**
+   * returns an observable for the geocoding request
+   */
+  fun requestObservable(request: OpenCageRequest): Observable<OpenCageResponse> {
     return Observable.create { emitter ->
-      val response = forwardRequest(request)
-      if (response != null) {
-        emitter.onNext(response)
-      }
+      val response = handleRequst(request)
+      emitter.onNext(response)
       emitter.onComplete()
     }
-  }
-
-  fun reverseRequestObservable(request: OpenCageRequest): Observable<OpenCageResponse> {
-    return Observable.create { emitter ->
-      val response = reverseRequest(request)
-      if (response != null) {
-        emitter.onNext(response)
-      }
-      emitter.onComplete()
-    }
-  }
-
-  @Throws(ResponseException::class, IOException::class)
-  fun forwardRequest(request: OpenCageRequest): OpenCageResponse? {
-    return handleRequst(request)
-  }
-
-  @Throws(ResponseException::class, IOException::class)
-  fun reverseRequest(request: OpenCageRequest): OpenCageResponse? {
-    return handleRequst(request)
   }
 
   private fun genenrateUrl(openCageRequest: OpenCageRequest): HttpUrl {
@@ -71,8 +52,11 @@ class OpenCageGeoCoder(val apiKey: String) {
     return urlBuilder.build()
   }
 
+  /**
+   * handle a geocoding request, can handle both forward and reverse requests.
+   */
   @Throws(ResponseException::class, IOException::class)
-  private fun handleRequst(openCageRequest: OpenCageRequest): OpenCageResponse {
+  public fun handleRequst(openCageRequest: OpenCageRequest): OpenCageResponse {
     val url = genenrateUrl(openCageRequest)
     val requestBuilder = Request.Builder()
 

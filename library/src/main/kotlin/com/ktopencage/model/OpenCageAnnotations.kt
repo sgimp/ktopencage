@@ -8,6 +8,7 @@ class OpenCageAnnotations {
   var MGRS: String? = null
   var OSM: OpenCageOSM? = null
   var geohash: String? = null
+  var flag: String? = null
   var sun: OpenCageSun? = null
   var wikidata: String? = null
   var qibla: Double? = null

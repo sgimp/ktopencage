@@ -19,7 +19,7 @@ android {
 
   buildTypes {
     release {
-      minifyEnabled true
+      minifyEnabled false
       proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
     }
   }
@@ -49,7 +49,6 @@ bintray {
   pkg {
     repo = 'andev'
     name = 'ktopencage'
-    userOrg = 'andevgimpel'
     desc = 'OpenCage geocoding client for Android'
     websiteUrl = 'https://github.com/sgimp/ktopencage'
     licenses = ['Apache-2.0']

@@ -36,43 +36,44 @@ Dependency
     var geoCoder = OpenCageGeoCoder(API_KEY)
 
     //forward request
-    
+
     val request = OpenCageRequest("Paris")
     request.minConfidence = 1
 
-    geoCoder.requestObservable(request)
-        .subscribeOn(Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe({
-          if (!it.results.isNullOrEmpty()) {
-            val result = it.results!![0]
-            Log.d(TAG, result.geometry!!.lat.toString() + "," + result.geometry!!.lng.toString())
-          }
-        }, { throwable -> throwable.printStackTrace() })
+    //Call the handleRequest method in the background
+
+    try {
+       val response = geoCoder.handleRequst(request)
+       if (!response.results.isNullOrEmpty()) {
+          val result = response.results!![0]
+          Log.d(
+              TAG,
+              result.geometry!!.lat.toString() + "," + result.geometry!!.lng.toString())
+       }
+    } catch (e: ResponseException) {
+       e.printStackTrace()
+    }
 
     //reverse request
     val request = OpenCageRequest(40.698613, -73.972494)
 
-    //call either the reverse method from a background thread.
-    //Or create an observable, make sure the observable will be executed on a background thread.
-    disposable = geoCoder.requestObservable(request)
-        .subscribeOn(Schedulers.io())
-        .observeOn(AndroidSchedulers.mainThread())
-        .subscribe({
-          if (!it.results.isNullOrEmpty()) {
-            val result = it.results!![0]
-            Log.d(TAG,result.formatted)
-          }
-        }, { throwable ->
-          throwable.printStackTrace()
-        })
+    //Call the handleRequest method in the background
+
+    try {
+      // call handle request from a background thread
+      val response = geoCoder.handleRequest(request)
+      if (!response.results.isNullOrEmpty()) {
+        val result = response.results!![0]
+        Log.d(TAG, result.formatted)
+      }
+    } catch (e: ResponseException) {
+      e.printStackTrace()
+    }
     ```
 
 ### Libraries
 
 okhttp - https://square.github.io/okhttp/
-
-RxKotlin - https://github.com/ReactiveX/RxKotlin
 
 Gson - https://github.com/google/gson
 

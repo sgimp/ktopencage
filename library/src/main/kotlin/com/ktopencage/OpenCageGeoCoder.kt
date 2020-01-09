@@ -44,7 +44,7 @@ class OpenCageGeoCoder(val apiKey: String) {
    * handle a geocoding request, can handle both forward and reverse requests.
    */
   @Throws(ResponseException::class, IOException::class)
-  public fun handleRequst(openCageRequest: OpenCageRequest): OpenCageResponse {
+  public fun handleRequest(openCageRequest: OpenCageRequest): OpenCageResponse {
     val url = genenrateUrl(openCageRequest)
     val requestBuilder = Request.Builder()
 

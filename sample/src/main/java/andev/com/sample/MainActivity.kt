@@ -39,7 +39,7 @@ class MainActivity : Activity(), CoroutineScope {
 
     try {
       // call handle request from a background thread
-      val response = geoCoder.handleRequst(request)
+      val response = geoCoder.handleRequest(request)
       if (!response.results.isNullOrEmpty()) {
         val result = response.results!![0]
         Log.d(TAG, result.formatted)
@@ -55,7 +55,7 @@ class MainActivity : Activity(), CoroutineScope {
     request.minConfidence = 1
 
     try {
-      val response = geoCoder.handleRequst(request)
+      val response = geoCoder.handleRequest(request)
       if (!response.results.isNullOrEmpty()) {
         val result = response.results!![0]
         Log.d(

@@ -4,7 +4,6 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import com.ktopencage.model.OpenCageRequest
 import com.ktopencage.model.OpenCageResponse
-import io.reactivex.Observable
 import okhttp3.HttpUrl
 import okhttp3.OkHttpClient
 import okhttp3.Request
@@ -20,17 +19,6 @@ class OpenCageGeoCoder(val apiKey: String) {
     gsonBuilder.registerTypeAdapter(Boolean::class.java, serializer)
     gsonBuilder.registerTypeAdapter(Boolean::class.javaPrimitiveType, serializer)
     gson = gsonBuilder.create()
-  }
-
-  /**
-   * returns an observable for the geocoding request
-   */
-  fun requestObservable(request: OpenCageRequest): Observable<OpenCageResponse> {
-    return Observable.create { emitter ->
-      val response = handleRequst(request)
-      emitter.onNext(response)
-      emitter.onComplete()
-    }
   }
 
   private fun genenrateUrl(openCageRequest: OpenCageRequest): HttpUrl {
@@ -66,12 +54,12 @@ class OpenCageGeoCoder(val apiKey: String) {
     try {
       val response = okHttpClient.newCall(requestBuilder.build()).execute()
 
-      if (response.code() != 200) {
-        throw ResponseException(response.code(), "HttpException")
+      if (response.code != 200) {
+        throw ResponseException(response.code, "HttpException")
       }
 
-      if (response.body() != null) {
-        val body = response.body()!!.string()
+      if (response.body != null) {
+        val body = response.body!!.string()
         val openCageResponse = gson.fromJson(body, OpenCageResponse::class.java)
         val openCageResponseCode = openCageResponse.status!!.code
 
